@@ -1,0 +1,87 @@
+server:
+  port: 8080
+
+  error:
+    include-stacktrace: never
+    include-message: never
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins:
+              - "http://localhost:5173"
+            allowedMethods:
+              - POST
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+      # server:
+      # webflux:
+      default-filters:
+        - name: Retry
+          args:
+            retries: 3
+            statuses: BAD_GATEWAY, GATEWAY_TIMEOUT
+            methods: GET, POST, OPTIONS
+
+      routes:
+        - id: users
+          uri: lb://user-service
+          predicates:
+            - Path=/auth/users/**
+          filters:
+            - RewritePath=/auth/(?<segment>.*), /${segment}
+
+        - id: auth
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=0
+            - name: CircuitBreaker
+              args:
+                name: authServiceCircuit
+                fallbackUri: forward:/fallback/auth
+
+        - id: orders
+          uri: lb://order-service
+          predicates:
+            - Path=/orders/**
+          filters:
+            - StripPrefix=0
+            - RemoveRequestHeader=Cookie
+
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: classpath:keys/public.pem
+
+eureka:
+  client:
+    service-url:
+      # defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://eureka-server:8761/eureka/
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{X-Correlation-Id}]"
+
+# logging:
+# level:
+#   org.springframework.cloud.gateway: DEBUG
+#   org.springframework.cloud.gateway.route.RouteDefinitionLocator: DEBUG
+#   org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: TRACE
+#   reactor.netty.http.client: DEBUG
+#   reactor.netty.http.server: DEBUG
