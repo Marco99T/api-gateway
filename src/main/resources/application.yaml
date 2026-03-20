@@ -40,9 +40,9 @@ spring:
           uri: lb://user-service
           # uri: https://user-service-lcps.onrender.com
           predicates:
-            - Path=/auth/users/**
+            - Path=/users/**
           filters:
-            - RewritePath=/auth/(?<segment>.*), /${segment}
+            - StripPrefix=0
 
         - id: auth
           uri: lb://auth-service
@@ -52,6 +52,7 @@ spring:
             - Method=GET,POST,PUT,DELETE,OPTIONS
           filters:
             - StripPrefix=0
+            - Retry=3
             - name: CircuitBreaker
               args:
                 name: authServiceCircuit
