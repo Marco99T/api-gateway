@@ -51,7 +51,7 @@ spring:
             - Path=/auth/**
             - Method=GET,POST,PUT,DELETE,OPTIONS
           filters:
-            - RewritePath=/auth/(?<segment>.*), /${segment}
+            - StripPrefix=0
             - name: CircuitBreaker
               args:
                 name: authServiceCircuit
