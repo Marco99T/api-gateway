@@ -36,14 +36,6 @@ spring:
             methods: GET
 
       routes:
-        - id: users
-          uri: lb://user-service
-          # uri: https://user-service-lcps.onrender.com
-          predicates:
-            - Path=/users/**
-          filters:
-            - StripPrefix=0
-
         - id: auth
           uri: lb://auth-service
           # uri: https://auth-service-hjq7.onrender.com
@@ -58,7 +50,15 @@ spring:
                 name: authServiceCircuit
                 fallbackUri: forward:/fallback/auth
 
-        - id: orders
+        - id: user
+          uri: lb://user-service
+          # uri: https://user-service-lcps.onrender.com
+          predicates:
+            - Path=/users/**
+          filters:
+            - StripPrefix=0
+
+        - id: order
           uri: lb://order-service
           # uri: https://order-service-nxx7.onrender.com
           predicates:
