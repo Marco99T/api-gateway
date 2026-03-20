@@ -37,16 +37,16 @@ spring:
 
       routes:
         - id: users
-          # uri: lb://user-service
-          uri: https://user-service-lcps.onrender.com
+          uri: lb://user-service
+          # uri: https://user-service-lcps.onrender.com
           predicates:
             - Path=/auth/users/**
           filters:
             - RewritePath=/auth/(?<segment>.*), /${segment}
 
         - id: auth
-          # uri: lb://auth-service
-          uri: https://auth-service-hjq7.onrender.com
+          uri: lb://auth-service
+          # uri: https://auth-service-hjq7.onrender.com
           predicates:
             - Path=/auth/**
             - Method=GET,POST,PUT,DELETE,OPTIONS
@@ -58,8 +58,8 @@ spring:
                 fallbackUri: forward:/fallback/auth
 
         - id: orders
-          # uri: lb://order-service
-          uri: https://order-service-nxx7.onrender.com
+          uri: lb://order-service
+          # uri: https://order-service-nxx7.onrender.com
           predicates:
             - Path=/orders/**
           filters:
@@ -79,9 +79,11 @@ spring:
 eureka:
   client:
     service-url:
-      # defaultZone: http://localhost:8761/eureka/
-      # defaultZone: http://eureka-server:8761/eureka/
-      defaultZone: https://eureka-server-ufvy.onrender.com/eureka/
+      # defaultZone: http://localhost:8761/eureka/ # LOCAL
+      defaultZone: ${URL_EUREKA:http://eureka-server:8761/eureka/}
+  instance:
+    # hostname: api-gateway # Nombre del servicio para Eureka
+    prefer-ip-address: true # En Docker, es mejor usar la IP para evitar problemas de resolución de nombres
 
 logging:
   pattern:
