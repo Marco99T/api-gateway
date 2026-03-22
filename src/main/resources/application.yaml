@@ -12,8 +12,8 @@ spring:
   cloud:
     gateway:
       httpclient:
-        connect-timeout: 2000
-        response-timeout: 2s
+        connect-timeout: 3000
+        response-timeout: 3s
 
       globalcors:
         add-to-simple-url-handler-mapping: true
@@ -91,10 +91,10 @@ resilience4j:
   circuitbreaker:
     instances:
       serviceCircuit:
-        slidingWindowSize: 5
-        failureRateThreshold: 75
+        slidingWindowSize: 10
+        failureRateThreshold: 50
         slowCallRateThreshold: 100
-        slowCallDurationThreshold: 3s
+        slowCallDurationThreshold: 5s
         waitDurationInOpenState: 5s
         recordExceptions:
           - java.io.IOException
