@@ -29,26 +29,13 @@ public class SecurityConfig {
                         .pathMatchers("/auth/**").permitAll()
                         .pathMatchers("/actuator/**").permitAll()
                         .anyExchange().authenticated())
-
                 .exceptionHandling(ex -> ex
-                        // .authenticationEntryPoint((exchange, exAuth) -> {
-                        //     var response = exchange.getResponse();
-                        //     var headers = response.getHeaders();
-
-                        //     headers.add("Access-Control-Allow-Origin", "http://localhost:5173");
-                        //     headers.add("Access-Control-Allow-Headers", "*");
-                        //     headers.add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-                        //     headers.add("Access-Control-Allow-Credentials", "true");
-
-                        //     response.setRawStatusCode(401);
-                        //     return response.setComplete();
-                        // })
                         .authenticationEntryPoint((exchange, authEx) -> {
-                        exchange.getResponse().setRawStatusCode(HttpStatus.SC_UNAUTHORIZED);
-                        return exchange.getResponse().setComplete();
+                            exchange.getResponse().setRawStatusCode(401);
+                            return exchange.getResponse().setComplete();
                         })
                         .accessDeniedHandler((exchange, accessDeniedEx) -> {
-                            exchange.getResponse().setRawStatusCode(HttpStatus.SC_FORBIDDEN);
+                            exchange.getResponse().setRawStatusCode(403);
                             return exchange.getResponse().setComplete();
                         }))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt())
