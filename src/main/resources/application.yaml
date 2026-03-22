@@ -11,6 +11,13 @@ spring:
 
   cloud:
     gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 5s
+      pool:
+        max-connections: 100
+        wiretap: true
+        
       globalcors:
         add-to-simple-url-handler-mapping: true
         corsConfigurations:
@@ -92,6 +99,7 @@ logging:
 
   level:
     org.springframework.security: DEBUG
+    reactor.netty.http.client: DEBUG
 #   org.springframework.cloud.gateway: DEBUG
 #   org.springframework.cloud.gateway.route.RouteDefinitionLocator: DEBUG
 #   org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: TRACE
