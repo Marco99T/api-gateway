@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.server.MethodNotAllowedException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.reactive.resource.NoResourceFoundException;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
@@ -33,10 +32,15 @@ public class GlobalErrorHandler implements ErrorWebExceptionHandler {
             status = HttpStatus.METHOD_NOT_ALLOWED;
             title = "Method Not Allowed";
             detail = "HTTP method not supported for this endpoint";
-        } else if (ex instanceof NoResourceFoundException) {
-            status = HttpStatus.NOT_FOUND;
-            title = "Resource Not Found";
-            detail = "The requested endpoint does not exist";
+        } else if (ex instanceof io.github.resilience4j.circuitbreaker.CallNotPermittedException) {
+            status = HttpStatus.SERVICE_UNAVAILABLE;
+            title = "Service Unavailable";
+            detail = "Circuit breaker is open";
+        } else if (ex instanceof java.io.IOException ||
+                ex instanceof java.util.concurrent.TimeoutException) {
+            status = HttpStatus.SERVICE_UNAVAILABLE;
+            title = "Service Unavailable";
+            detail = "Upstream service failed";
         } else if (ex instanceof ResponseStatusException rse) {
             status = (HttpStatus) rse.getStatusCode();
             title = status.getReasonPhrase();
