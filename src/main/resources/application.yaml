@@ -90,8 +90,8 @@ logging:
   pattern:
     level: "%5p [${spring.application.name:},%X{X-Correlation-Id}]"
 
-# logging:
-# level:
+  level:
+    org.springframework.security: DEBUG
 #   org.springframework.cloud.gateway: DEBUG
 #   org.springframework.cloud.gateway.route.RouteDefinitionLocator: DEBUG
 #   org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: TRACE
