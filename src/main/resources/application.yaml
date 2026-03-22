@@ -20,7 +20,6 @@ spring:
         corsConfigurations:
           "[/**]":
             allowedOrigins:
-              # - "http://localhost:5173"
               - "https://user-app-theta-seven.vercel.app"
             allowedMethods:
               - GET
@@ -77,6 +76,7 @@ spring:
       resourceserver:
         jwt:
           public-key-location: classpath:keys/public.pem
+          # issuer-uri: http://localhost:8083
 
 eureka:
   client:
@@ -104,9 +104,8 @@ logging:
   pattern:
     level: "%5p [${spring.application.name:},%X{X-Correlation-Id}]"
 
-  level:
-    org.springframework.security: DEBUG
-    reactor.netty.http.client: DEBUG
+    # org.springframework.security: DEBUG
+    # reactor.netty.http.client: DEBUG
 #   org.springframework.cloud.gateway: DEBUG
 #   org.springframework.cloud.gateway.route.RouteDefinitionLocator: DEBUG
 #   org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: TRACE
