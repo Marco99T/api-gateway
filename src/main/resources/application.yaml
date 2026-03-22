@@ -12,8 +12,8 @@ spring:
   cloud:
     gateway:
       httpclient:
-        connect-timeout: 5000
-        response-timeout: 5s
+        connect-timeout: 3000
+        response-timeout: 3s
       pool:
         max-connections: 100
         wiretap: true
@@ -45,29 +45,25 @@ spring:
       routes:
         - id: auth
           uri: lb://auth-service
-          # uri: https://auth-service-hjq7.onrender.com
           predicates:
             - Path=/auth/**
-            - Method=GET,POST,PUT,DELETE,OPTIONS
+            - Method=POST,OPTIONS
           filters:
             - StripPrefix=0
-            - Retry=3
-            - name: CircuitBreaker
-              args:
-                name: authServiceCircuit
-                fallbackUri: forward:/fallback/auth
 
         - id: user
           uri: lb://user-service
-          # uri: https://user-service-lcps.onrender.com
           predicates:
             - Path=/users/**
           filters:
             - StripPrefix=0
+            - name: CircuitBreaker
+              args:
+                name: userServiceCircuit
+                fallbackUri: forward:/fallback/user
 
         - id: order
           uri: lb://order-service
-          # uri: https://order-service-nxx7.onrender.com
           predicates:
             - Path=/orders/**
           filters:
@@ -92,6 +88,16 @@ eureka:
   instance:
     # hostname: api-gateway # Nombre del servicio para Eureka
     prefer-ip-address: true # En Docker, es mejor usar la IP para evitar problemas de resolución de nombres
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      authServiceCircuit:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        slowCallRateThreshold: 100
+        slowCallDurationThreshold: 5s
+        waitDurationInOpenState: 10s
 
 logging:
   pattern:
