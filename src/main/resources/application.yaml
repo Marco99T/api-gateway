@@ -88,6 +88,12 @@ eureka:
     prefer-ip-address: true # En Docker, es mejor usar la IP para evitar problemas de resolución de nombres
 
 resilience4j:
+  ratelimiter:
+    instances:
+      serviceCircuit:
+        limit-for-period: 5 # máximo 5 requests
+        limit-refresh-period: 1s # cada 1 segundo
+
   circuitbreaker:
     instances:
       serviceCircuit:
